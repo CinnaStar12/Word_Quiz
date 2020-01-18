@@ -35,6 +35,8 @@ var questions = [
 ]
 var start = document.querySelector("#start-btn");
 var question = document.querySelector("#questionDiv");
+var secondsLeft = 75;
+var timer = document.querySelector("#timer");
 
 
 start.addEventListener("click", function(){
@@ -44,6 +46,7 @@ start.addEventListener("click", function(){
 })
 
 function startQuiz(){
+
     for(i = 0; i < questions.length; i++ )
     {
         question.textContent = questions[i].title;
