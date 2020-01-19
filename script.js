@@ -1,4 +1,5 @@
 var start = $("#start-btn");
+var highScoreBtn = $("<button>");
 var questionTitle = $("#questionDiv");
 var secondsLeft = 0;
 var timer = $("#timer");
@@ -72,9 +73,9 @@ function startQuiz(){
 }
 function endQuiz(){
     questionTitle.remove();
-    var endScreen = $("<div>");
+    endScreen = $("<div>");
     endScreen.attr("class", "col-md text-center")
-    $("body").append(endScreen);
+    $(".container").append(endScreen);
     message.text("Quiz Over!");
     endScreen.append(message);
     var score = $("<div>");
@@ -85,16 +86,26 @@ function endQuiz(){
     score.text("Your score is " + finalScore + "!")
     message.append(score);
     clearInterval();
-    highScoreBtn = $("<button>")
     highScoreBtn.text("Save High Score")
     highScoreBtn.attr("class", "btn btn-primary")
     endScreen.append(highScoreBtn);
 }
 highScoreBtn.on("click", function(){
+    if(event.target.textContent === "Save High Score"){
     endScreen.remove();
-    input = $("<form>");
-
+    enterName();
+    }
 })
-function saveHighScore(){
-
+function enterName(){
+    var input = $("<form>");
+    var name = $("<input>");
+    var nameAsk = $("<h5>");
+    nameAsk.text("Enter your name");
+    input.attr("class", "col-md text-center")
+    name.attr("type", "text");
+    name.attr("id", "name");
+    $(".container").append(input);
+    input.append(name);
+    input.prepend(nameAsk);
+    
 }
