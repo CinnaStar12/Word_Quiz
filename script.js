@@ -1,80 +1,64 @@
-var questions = [
-    {
-        title: "What river function as the southern border of Texas?", 
-        choices: ["Red River", "Brazos River", "Rio Grande River", "San Antonio River"],
-        answer: "Rio Grande River"
-    },
-    {
-        title: "What state borders texas to the north?",
-        choices: ["Arkansas", "Oklahoma", "New Mexico", "Louisiana"],
-        answer: "Oklahoma",
-    },
-    {
-        title: "What city is the capital of texas?",
-        choices: ["Austin","Houston","San Antonio", "Dallas"],
-        answer: "Austin",
-    },
-    {
-        title:  "Texas is the ___ largest state in the United States.",
-        choices: ["1st", "2nd","3rd","4th"],
-        answer: "2nd",
-    },
-    {
-        title: "What is the state flower of Texas?",
-        choices: ["Texas Indian Paintbrush", "Firewheel","Pink Evening Primrose", "Blue Bonnet"],
-        answer: "Blue Bonnet",
-    },
-    {
-        title: "What is the most populated city in Texas?",
-        choices: ["Houston", "Austin", "Dallas", "El Paso"],
-        answer: "Houston"
-    }
-    
-
-
-]
-var start = document.querySelector("#start-btn");
-var question = document.querySelector("#questionDiv");
+var start = $("#start-btn");
+var questionTitle = $("#questionDiv");
 var secondsLeft = 75;
-var timer = document.querySelector("#timer");
+var timer = $("#timer");
+var qNumber = 0;
+var message = $("<h2>");
 
 
-start.addEventListener("click", function(){
-    start.remove();
-    startQuiz();
-    
-})
+function runQuiz(qNumber) {
+    //find question title, choices, and answer
+    var choices = questions[qNumber].choices;
+    var answer = questions[qNumber].answer;
+    var selection = $("<ol>");
+    //write and append question
+    questionTitle.text(questions[qNumber].title);
+    questionTitle.append(selection);
+    //create buttons and append for choices
+    console.log(answer);
+    choices.forEach(function (choice) {
+        var choiceList = $("<li>")
+        var choiceBtn = $("<button>");
+        choiceBtn.text(choice)
+        choiceBtn.attr("class", "btn btn-primary")
+        selection.append(choiceList);
+        choiceList.append(choiceBtn);
 
-function startQuiz(){
+    });
+    //check answer to scrip if wrong lose time, if right gain score and move on.
+    selection.append(message);
 
-    for(i = 0; i < questions.length; i++ )
-    {
-        question.textContent = questions[i].title;
-        var choiceList = document.createElement("ol")
-        choiceList.setAttribute("class", "justify-content-left")
-        question.append(choiceList);
-
-        var answers = questions[i].choices;       
-        for(i = 1;i <= answers.length; i++)
-        {
-            var choice = document.createElement("li");
-            var choiceBtn = document.createElement("button");
-            var index = (i-1);
-            choiceBtn.textContent = answers[index];
-            choiceBtn.setAttribute("class", "btn btn-primary")
-            choiceBtn.setAttribute("data-id", "answer" + (i)); 
-            question.appendChild(choiceList);
-            choiceList.appendChild(choice);
-            choice.appendChild(choiceBtn);
+    $("button").on("click", function (event) {
+        if (event.target.textContent === answer) {
+            message.text("Correct!");
+            qNumber++;
+            runQuiz(qNumber);
         }
-    
-    }
+        else {
+            message.text("Wrong!");
+            secondsLeft -= 10;
+        }
+    })
+
+}
+function timeLeft(){
+    var timeLimit = setInterval(function(){
+        secondsLeft--;
+        timer.text("Time: " + secondsLeft);
+        if(secondsLeft <= 0)
+        {
+            endQuiz();
+        }
+    }, 1000);
 }
 
-choiceList.addEventListener("click", function(event){
-    if(event.target.matches() = questions.answer)
-    {
-        
-    }
-});
+start.on("click", function () {
+    start.remove();
+    timeLeft();
+    runQuiz(0);
 
+
+})
+function endQuiz(){
+    questionTitle.remove();
+}
