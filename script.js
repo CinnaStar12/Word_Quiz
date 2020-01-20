@@ -1,15 +1,28 @@
-var start = $("#start-btn");
+var start = $("#start-div");
 var highScoreBtn = $("<button>");
 var questionTitle = $("#questionDiv");
 var secondsLeft = 0;
 var timer = $("#timer");
 var qNumber = 0;
 var message = $("<h2>");
+var highScoreList = [];
+var highScoreIndex = 0;
+var endScreen = $("<div>");
+var highScoreBoard = $("<ol>");
+var input = $("<form>");
 
+pullHighScore();
 
+$("#highScore").on("click",function(){
+    displayHighScore();
+    showDiv(highScoreBoard);  
+
+    
+})
 function runQuiz(qNumber) {
     //find question title, choices, and answer
     var selection = $("<ol>");
+    showDiv(questionTitle);
     //write and append question
     questionTitle.text(questions[qNumber].title);
     questionTitle.append(selection);
@@ -21,11 +34,11 @@ function runQuiz(qNumber) {
         choiceBtn.attr("class", "btn btn-primary")
         selection.append(choiceList);
         choiceList.append(choiceBtn);
-
+        
     });
     //check answer to scrip if wrong lose time, if right gain score and move on.
     selection.append(message);
-
+    
     $("button").on("click", function (event) {
         if (event.target.textContent === questions[qNumber].answer) {
             message.text("Correct!");
@@ -34,12 +47,13 @@ function runQuiz(qNumber) {
             {
                 var score = secondsLeft;
                 endQuiz();
+                showDiv(endScreen);
                 clearInterval(timeLimit);
                 
                 
             }
             else{
-            runQuiz(qNumber);
+                runQuiz(qNumber);
             }
         }
         else {
@@ -63,19 +77,23 @@ function timeLeft(time){
     }, 1000);
 }
 
-start.on("click", startQuiz);
+start.on("click",startQuiz);
 
 function startQuiz(){
-    start.remove();
+    hideDiv(start);
+    hideDiv(endScreen);
+    hideDiv(input);
+    hideDiv(highScoreBoard);
+    showDiv(questionTitle);
     timeLeft(150);
     runQuiz(0);
 
 }
 function endQuiz(){
-    questionTitle.remove();
-    endScreen = $("<div>");
+    hideDiv(questionTitle);
     endScreen.attr("class", "col-md text-center")
-    $(".container").append(endScreen);
+    $("#display-div").append(endScreen);
+    showDiv(endScreen);
     message.text("Quiz Over!");
     endScreen.append(message);
     var score = $("<div>");
@@ -89,23 +107,74 @@ function endQuiz(){
     highScoreBtn.text("Save High Score")
     highScoreBtn.attr("class", "btn btn-primary")
     endScreen.append(highScoreBtn);
+    endScreen.append(start);
+    showDiv(start);
+    
 }
 highScoreBtn.on("click", function(){
     if(event.target.textContent === "Save High Score"){
-    endScreen.remove();
+    hideDiv(endScreen);
+    hideDiv(highScoreBoard);
+    showDiv(input);
     enterName();
     }
 })
 function enterName(){
-    var input = $("<form>");
     var name = $("<input>");
     var nameAsk = $("<h5>");
     nameAsk.text("Enter your name");
     input.attr("class", "col-md text-center")
     name.attr("type", "text");
     name.attr("id", "name");
-    $(".container").append(input);
+    $("#display-div").append(input);
     input.append(name);
     input.prepend(nameAsk);
+    input.append(start);
+    showDiv(start);
+    input.on("submit", function(event) {
+        event.preventDefault(); 
+        var scoreName = name.val();
+        highScoreList.push(  {
+            name: scoreName,
+            score: finalScore,
+        }
+        )
+        storeHighScore();
+        message.text("Score Saved!")
+        input.append(message);
+    })
+    
+}
+function hideDiv(element){
+    element.attr("style", "display: none");
+}
+function showDiv(element){
+    element.attr("style", "display: block");
+}
+function storeHighScore(){
+    var strHigh = JSON.stringify(highScoreList);
+    localStorage.setItem("highscores", strHigh);
+}
+function pullHighScore(){
+    var strHigh = localStorage.getItem("highscores");
+    highScoreList = JSON.parse(strHigh);
+    console.log(highScoreList)
+    return highScoreList;
+}
+function displayHighScore(){
+    hideDiv(endScreen);
+    hideDiv(input);
+    $("#display-div").append(highScoreBoard);
+    highScoreBoard.text("");
+    highScoreList.forEach(function(){
+        var place = $("<li>");
+        place.text("Name: " + highScoreList[highScoreIndex].name +" Score: " + highScoreList[highScoreIndex].score);
+        highScoreBoard.append(place);
+        highScoreIndex++;
+        
+    });
+    highScoreIndex = 0;
+    highScoreBoard.append(start);
+    showDiv(start);
     
 }
