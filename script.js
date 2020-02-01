@@ -5,14 +5,16 @@ var secondsLeft = 0;
 var timer = $("#timer");
 var qNumber = 0;
 var message = $("<h2>");
-var highScoreList = [];
+var highScoreList = [""];
 var highScoreIndex = 0;
 var endScreen = $("<div>");
 var highScoreBoard = $("<ol>");
 var input = $("<form>");
-
+$("document").ready(function () {
+console.log(highScoreList)
 pullHighScore();
-
+console.log(highScoreList);
+});
 $("#highScore").on("click",function(){
     displayHighScore();
     showDiv(highScoreBoard);  
@@ -158,8 +160,13 @@ function storeHighScore(){
 function pullHighScore(){
     var strHigh = localStorage.getItem("highscores");
     highScoreList = JSON.parse(strHigh);
+    if(highScoreList == null){
+        highScoreList = [""]
+    }
+    else{
     console.log(highScoreList)
     return highScoreList;
+    }
 }
 function displayHighScore(){
     hideDiv(endScreen);
